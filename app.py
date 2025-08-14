@@ -100,20 +100,21 @@ if st.session_state.active_page == "Dashboard":
 
     col1, col2 = st.columns(2)
     col1.subheader("Total sales per year")
+    filtered_df['Year'] = pd.to_numeric(filtered_df['Year'], errors = 'coerce')
+    filtered_df = filtered_df.sort_values('Year')
     fig = px.line(filtered_df, x="Year", y="Global_Sales")
     fig.update_layout(yaxis_title="Sales ($)", xaxis_title= "Year")
     col1.plotly_chart(fig, use_container_width= True)
 
-    col2.subheader("Distribution of Sales (Last 5 Years)")
-    last_year = filtered_df["Year"]
-    last5_df = filtered_df[filtered_df['Year'] >= last_year - 4]
+    col2.subheader("Distribution of Sales (Last 10 Years)")
+    last_year = filtered_df['Year'].max()
+    last5_df = filtered_df[filtered_df['Year'] >= last_year - 10]
     melted_df = last5_df.melt(
         id_vars='Year',
         value_vars = ['NA_Sales','EU_Sales', 'JP_Sales','Other_Sales'],
         var_name= 'Region',
         value_name= 'Sales'
     )
-
     fig2 = px.bar(
         melted_df,
         x = 'Year',
@@ -122,7 +123,6 @@ if st.session_state.active_page == "Dashboard":
         barmode = 'group',
         text = 'Sales'
     )
-
     fig2.update_layout(
         yaxis_title = "Total Sales ($)",
         xaxis_title = "Year",
